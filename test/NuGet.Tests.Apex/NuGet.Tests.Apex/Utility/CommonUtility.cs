@@ -469,15 +469,17 @@ namespace NuGet.Tests.Apex
         {
             logger.LogInformation("Creating solution");
             solutionService.CreateEmptySolution("TestSolution", pathContext.SolutionRoot);
-
+            
             logger.LogInformation("Adding project");
             var project = solutionService.AddProject(ProjectLanguage.CSharp, projectTemplate, ProjectTargetFramework.V46, "TestProject");
+            solutionService.Verify.HasProject(project);
 
             logger.LogInformation("Saving solution");
             solutionService.Save();
 
             logger.LogInformation("Building solution");
-            project.Build();
+            solutionService.BuildManager.Build(waitForBuildToFinish: true);
+            solutionService.BuildManager.Verify.Succeeded();                
 
             return project;
         }
