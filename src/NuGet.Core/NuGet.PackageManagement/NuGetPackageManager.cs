@@ -1644,18 +1644,27 @@ namespace NuGet.PackageManagement
             return results;
         }
 
-        public async Task<IEnumerable<NuGetProjectAction>> PreviewInstallPackageAsync(NuGetProject nuGetProject, PackageIdentity packageIdentity,
-            ResolutionContext resolutionContext, INuGetProjectContext nuGetProjectContext,
-            IEnumerable<SourceRepository> primarySources, IEnumerable<SourceRepository> secondarySources,
+        public async Task<IEnumerable<NuGetProjectAction>> PreviewInstallPackageAsync(
+            NuGetProject nuGetProject,
+            PackageIdentity packageIdentity,
+            ResolutionContext resolutionContext,
+            INuGetProjectContext nuGetProjectContext,
+            IEnumerable<SourceRepository> primarySources,
+            IEnumerable<SourceRepository> secondarySources,
             CancellationToken token)
         {
             return await PreviewInstallPackageAsync(nuGetProject, packageIdentity, resolutionContext, nuGetProjectContext, primarySources, secondarySources, versionRange: null, token);
         }
 
-        public async Task<IEnumerable<NuGetProjectAction>> PreviewInstallPackageAsync(NuGetProject nuGetProject, PackageIdentity packageIdentity,
-            ResolutionContext resolutionContext, INuGetProjectContext nuGetProjectContext,
-            IEnumerable<SourceRepository> primarySources, IEnumerable<SourceRepository> secondarySources,
-             VersionRange versionRange, CancellationToken token)
+        public async Task<IEnumerable<NuGetProjectAction>> PreviewInstallPackageAsync(
+            NuGetProject nuGetProject,
+            PackageIdentity packageIdentity,
+            ResolutionContext resolutionContext,
+            INuGetProjectContext nuGetProjectContext,
+            IEnumerable<SourceRepository> primarySources,
+            IEnumerable<SourceRepository> secondarySources,
+            VersionRange versionRange,
+            CancellationToken token)
         {
             if (nuGetProject == null)
             {

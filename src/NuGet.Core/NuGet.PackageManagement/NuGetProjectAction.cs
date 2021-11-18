@@ -55,13 +55,14 @@ namespace NuGet.PackageManagement
         /// </summary>
         public NuGetProject Project { get; private set; }
 
-        // 1.0 BACKCOMPAT OVERLOAD -- DO NOT TOUCH
-        protected NuGetProjectAction(PackageIdentity packageIdentity, NuGetProjectActionType nuGetProjectActionType, NuGetProject project, SourceRepository sourceRepository)
+#pragma warning disable RS0027 // Public API with optional parameter(s) should have the most parameters amongst its public overloads.
+        protected NuGetProjectAction(PackageIdentity packageIdentity, NuGetProjectActionType nuGetProjectActionType, NuGetProject project, SourceRepository sourceRepository = null)
+#pragma warning restore RS0027 // Public API with optional parameter(s) should have the most parameters amongst its public overloads.
             : this(packageIdentity, nuGetProjectActionType, project, sourceRepository, versionRange: null)
         {
         }
 
-        protected NuGetProjectAction(PackageIdentity packageIdentity, NuGetProjectActionType nuGetProjectActionType, NuGetProject project, SourceRepository sourceRepository = null, VersionRange versionRange = null)
+        protected NuGetProjectAction(PackageIdentity packageIdentity, NuGetProjectActionType nuGetProjectActionType, NuGetProject project, SourceRepository sourceRepository, VersionRange versionRange)
         {
             if (packageIdentity == null)
             {
