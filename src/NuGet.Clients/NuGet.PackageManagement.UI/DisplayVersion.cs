@@ -110,9 +110,7 @@ namespace NuGet.PackageManagement.UI
             {
                 var formattedVersionString = Version.ToString(versionFormat, VersionFormatter.Instance);
 
-                _toString = string.IsNullOrEmpty(AdditionalInfo) ?
-                    formattedVersionString :
-                    AdditionalInfo + " " + formattedVersionString;
+                _toString = AdditionalInfo + " " + formattedVersionString;
             }
             else
             {
