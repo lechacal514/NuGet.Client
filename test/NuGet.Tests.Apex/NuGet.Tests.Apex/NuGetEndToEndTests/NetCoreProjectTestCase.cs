@@ -20,7 +20,7 @@ namespace NuGet.Tests.Apex
         }
 
         // basic create for .net core template
-        [NuGetWpfTheory(Skip = "https://github.com/NuGet/Home/issues/11308")]
+        [NuGetWpfTheory]
         [MemberData(nameof(GetNetCoreTemplates))]
         public void CreateNetCoreProject_RestoresNewProject(ProjectTemplate projectTemplate)
         {
