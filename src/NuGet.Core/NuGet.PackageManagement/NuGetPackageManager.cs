@@ -3245,7 +3245,6 @@ namespace NuGet.PackageManagement
                     // Restore and commit the lock file to disk regardless of the result
                     // This will restore all parents in a single restore 
                     await DependencyGraphRestoreUtility.RestoreAsync(
-                        SolutionManager,
                         dgSpecForParents,
                         referenceContext,
                         GetRestoreProviderCache(),
@@ -3254,6 +3253,8 @@ namespace NuGet.PackageManagement
                         nuGetProjectContext.OperationId,
                         forceRestore: false, // No need to force restore as the inputs would've changed here anyways
                         isRestoreOriginalAction: false, // not an explicit restore request instead being done as part of install or update
+                        additionalMessages: null,
+                        progressReporter: null, // TODO NK - Add the progress reporter here.
                         log: logger,
                         token: token);
                 }

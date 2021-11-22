@@ -41,7 +41,7 @@ namespace NuGet.PackageManagement
             ILogger log,
             CancellationToken token)
         {
-            return RestoreAsync(solutionManager,
+            return RestoreAsync(
                 dgSpec,
                 context,
                 providerCache,
@@ -51,6 +51,7 @@ namespace NuGet.PackageManagement
                 forceRestore,
                 isRestoreOriginalAction,
                 additionalMessages: null,
+                progressReporter: null,
                 log,
                 token);
         }
@@ -58,7 +59,8 @@ namespace NuGet.PackageManagement
         /// <summary>
         /// Restore a solution and cache the dg spec to context.
         /// </summary>
-        public static async Task<IReadOnlyList<RestoreSummary>> RestoreAsync(
+        [Obsolete("This method will be removed in a future release. Use other one of the other RestoreAsync methods.")]
+        public static Task<IReadOnlyList<RestoreSummary>> RestoreAsync(
             ISolutionManager solutionManager,
             DependencyGraphSpec dgSpec,
             DependencyGraphCacheContext context,
@@ -72,9 +74,39 @@ namespace NuGet.PackageManagement
             ILogger log,
             CancellationToken token)
         {
-            // TODO: This will flow from UI once we enable UI option to trigger reevaluation
-            var restoreForceEvaluate = false;
+            return RestoreAsync(
+                dgSpec,
+                context,
+                providerCache,
+                cacheContextModifier,
+                sources,
+                parentId,
+                forceRestore,
+                isRestoreOriginalAction,
+                additionalMessages,
+                progressReporter: null,
+                log,
+                token
+                );
+        }
 
+        /// <summary>
+        /// Restore a solution and cache the dg spec to context.
+        /// </summary>
+        public static async Task<IReadOnlyList<RestoreSummary>> RestoreAsync( // TODO NK - Add tests about progress reporting here. Add tests about the overall progress reporter.
+            DependencyGraphSpec dgSpec,
+            DependencyGraphCacheContext context,
+            RestoreCommandProvidersCache providerCache,
+            Action<SourceCacheContext> cacheContextModifier,
+            IEnumerable<SourceRepository> sources,
+            Guid parentId,
+            bool forceRestore,
+            bool isRestoreOriginalAction,
+            IReadOnlyList<IAssetsLogMessage> additionalMessages,
+            IRestoreProgressReporter progressReporter,
+            ILogger log,
+            CancellationToken token)
+        {
             // Check if there are actual projects to restore before running.
             if (dgSpec.Restore.Count > 0)
             {
@@ -83,7 +115,7 @@ namespace NuGet.PackageManagement
                     // Update cache context
                     cacheContextModifier(sourceCacheContext);
 
-                    var restoreContext = GetRestoreContext(
+                    var restoreContext = GetRestoreArgs(
                         context,
                         providerCache,
                         sourceCacheContext,
@@ -92,8 +124,9 @@ namespace NuGet.PackageManagement
                         parentId,
                         forceRestore,
                         isRestoreOriginalAction,
-                        restoreForceEvaluate,
-                        additionalMessages);
+                        restoreForceEvaluate: false,
+                        additionalMessages,
+                        progressReporter: progressReporter);
 
                     var restoreSummaries = await RestoreRunner.RunAsync(restoreContext, token);
 
@@ -169,7 +202,7 @@ namespace NuGet.PackageManagement
                 cacheContextModifier(sourceCacheContext);
 
                 // Settings passed here will be used to populate the restore requests.
-                var restoreContext = GetRestoreContext(
+                var restoreContext = GetRestoreArgs(
                     context,
                     providerCache,
                     sourceCacheContext,
@@ -179,7 +212,8 @@ namespace NuGet.PackageManagement
                     forceRestore: true,
                     isRestoreOriginalAction: false,
                     restoreForceEvaluate: true,
-                    additionalMessasges: null);
+                    additionalMessasges: null,
+                    progressReporter: null);
 
                 var requests = await RestoreRunner.GetRequests(restoreContext);
                 var results = await RestoreRunner.RunWithoutCommit(requests, restoreContext);
@@ -222,7 +256,7 @@ namespace NuGet.PackageManagement
                 cacheContextModifier(sourceCacheContext);
 
                 // Settings passed here will be used to populate the restore requests.
-                var restoreContext = GetRestoreContext(
+                var restoreContext = GetRestoreArgs(
                     context,
                     providerCache,
                     sourceCacheContext,
@@ -232,7 +266,8 @@ namespace NuGet.PackageManagement
                     forceRestore: true,
                     isRestoreOriginalAction: false,
                     restoreForceEvaluate: true,
-                    additionalMessasges: null);
+                    additionalMessasges: null,
+                    progressReporter: null);
 
                 var requests = await RestoreRunner.GetRequests(restoreContext);
                 var results = await RestoreRunner.RunWithoutCommit(requests, restoreContext);
@@ -385,9 +420,9 @@ namespace NuGet.PackageManagement
         }
 
         /// <summary>
-        /// Create a restore context.
+        /// Create a restore args.
         /// </summary>
-        private static RestoreArgs GetRestoreContext(
+        private static RestoreArgs GetRestoreArgs(
             DependencyGraphCacheContext context,
             RestoreCommandProvidersCache providerCache,
             SourceCacheContext sourceCacheContext,
@@ -397,7 +432,8 @@ namespace NuGet.PackageManagement
             bool forceRestore,
             bool isRestoreOriginalAction,
             bool restoreForceEvaluate,
-            IReadOnlyList<IAssetsLogMessage> additionalMessasges)
+            IReadOnlyList<IAssetsLogMessage> additionalMessasges,
+            IRestoreProgressReporter progressReporter)
         {
 #pragma warning disable CS0618 // Type or member is obsolete
             var caching = new CachingSourceProvider(new PackageSourceProvider(context.Settings, enablePackageSourcesChangedEvent: false));
@@ -419,7 +455,8 @@ namespace NuGet.PackageManagement
                 ParentId = parentId,
                 IsRestoreOriginalAction = isRestoreOriginalAction,
                 RestoreForceEvaluate = restoreForceEvaluate,
-                AdditionalMessages = additionalMessasges
+                AdditionalMessages = additionalMessasges,
+                ProgressReporter = progressReporter,
             };
 
             return restoreContext;

@@ -117,7 +117,6 @@ namespace NuGet.PackageManagement.Test
 
                 // Act
                 await DependencyGraphRestoreUtility.RestoreAsync(
-                    solutionManager.Object,
                     dgSpec,
                     restoreContext,
                     restoreCommandProvidersCache,
@@ -127,6 +126,7 @@ namespace NuGet.PackageManagement.Test
                     forceRestore: false,
                     isRestoreOriginalAction: true,
                     additionalMessages,
+                    progressReporter: null,
                     logger,
                     CancellationToken.None);
 
