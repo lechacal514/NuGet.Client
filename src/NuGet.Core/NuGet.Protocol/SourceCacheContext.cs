@@ -29,6 +29,8 @@ namespace NuGet.Protocol.Core.Types
         /// </summary>
         public bool NoCache { get; set; }
 
+        public bool OnlyCache { get; set; }
+
         /// <summary>
         /// If set, the global disk cache will not be written to.
         /// </summary>

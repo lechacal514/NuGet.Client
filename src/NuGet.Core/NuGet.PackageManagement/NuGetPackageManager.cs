@@ -3243,7 +3243,7 @@ namespace NuGet.PackageManagement
                 if (dgSpecForParents.Restore.Count > 0)
                 {
                     // Restore and commit the lock file to disk regardless of the result
-                    // This will restore all parents in a single restore 
+                    // This will restore all parents in a single restore
                     await DependencyGraphRestoreUtility.RestoreAsync(
                         SolutionManager,
                         dgSpecForParents,
@@ -3391,17 +3391,23 @@ namespace NuGet.PackageManagement
 
             token.ThrowIfCancellationRequested();
 
-            using (var downloadResult = await PackageDownloader.GetDownloadResourceResultAsync(
-                enabledSources,
-                packageIdentity,
-                downloadContext,
-                SettingsUtility.GetGlobalPackagesFolder(Settings),
-                new ProjectContextLogger(nuGetProjectContext),
-                token))
-            {
-                // Install package whether returned from the cache or a direct download
-                await PackagesFolderNuGetProject.InstallPackageAsync(packageIdentity, downloadResult, nuGetProjectContext, token);
-            }
+
+                using (var downloadResult = await PackageDownloader.GetDownloadResourceResultAsync(
+                    enabledSources,
+                    packageIdentity,
+                    downloadContext,
+                    SettingsUtility.GetGlobalPackagesFolder(Settings),
+                    new ProjectContextLogger(nuGetProjectContext),
+                    token))
+                {
+
+                    // Install package whether returned from the cache or a direct download
+                    if (!downloadContext.SourceCacheContext.OnlyCache)
+                    {
+                        await PackagesFolderNuGetProject.InstallPackageAsync(packageIdentity, downloadResult,
+                            nuGetProjectContext, token);
+                    }
+                }
 
             return true;
         }

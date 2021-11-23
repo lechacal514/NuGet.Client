@@ -148,6 +148,7 @@ namespace NuGet.CommandLine
                 {
                     cacheContext.NoCache = NoCache;
                     cacheContext.DirectDownload = DirectDownload;
+                    cacheContext.OnlyCache = OnlyCache;
 
                     var restoreContext = restoreInputs.RestoreV3Context;
                     var providerCache = new RestoreCommandProvidersCache();
@@ -381,6 +382,7 @@ namespace NuGet.CommandLine
             {
                 cacheContext.NoCache = NoCache;
                 cacheContext.DirectDownload = DirectDownload;
+                cacheContext.OnlyCache = OnlyCache;
 
                 var packageSourceMapping = PackageSourceMapping.GetPackageSourceMapping(Settings);
 

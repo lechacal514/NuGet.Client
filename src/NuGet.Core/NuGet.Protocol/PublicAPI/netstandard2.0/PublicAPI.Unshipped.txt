@@ -1,0 +1,2 @@
+NuGet.Protocol.Core.Types.SourceCacheContext.OnlyCache.get -> bool
+NuGet.Protocol.Core.Types.SourceCacheContext.OnlyCache.set -> void
